@@ -9,15 +9,21 @@
     </div>
     <div id="movie-div">
       <div class="movie-case" v-for="item in movies" :key="item.id">
-        <img :src="`https://image.tmdb.org/t/p/w154/${item.poster_path}`" />
-        <h4 id="m-title">{{ item.title }}</h4>
+        <router-link :to="'/movie/' + item.id">
+          <img :src="`https://image.tmdb.org/t/p/w154/${item.poster_path}`" />
+          <h4 id="m-title">{{ item.title }}</h4>
+        </router-link>
       </div>
     </div>
-    <!-- <div id="pagination">
-      <div id="pagi-btn" v-for="page in pages">
-        <button>{{ page }}</button>
-      </div>
-    </div> -->
+    <div id="pagination">
+      <button
+        class="pagination-btn"
+        v-for="page in pages"
+        @click="selectPage(page)"
+      >
+        {{ page }}
+      </button>
+    </div>
   </div>
 </template>
 
@@ -29,7 +35,7 @@ export default {
       movies: [],
       apiKey: "6ac722593e5dba1c8e10c2f8dda07f65",
       baseURL: "https://api.themoviedb.org/3/",
-      page: "&page=1",
+      page: 1,
       pages: []
     };
   },
@@ -41,13 +47,14 @@ export default {
         this.apiKey +
         "&query=" +
         this.search_input +
+        "&page=" +
         this.page;
       fetch(url)
         .then(response => response.json())
         .then(data => {
           this.movies = data.results;
           let pagesArr = [];
-          for (let i = "page", count = 0; count < data.total_pages; count++) {
+          for (let i = 1, count = 0; count < data.total_pages; count++, i++) {
             pagesArr.push(i);
           }
           this.pages = pagesArr;
@@ -55,6 +62,10 @@ export default {
         .catch(err => {
           alart(err);
         });
+    },
+    selectPage(id) {
+      this.page = id;
+      this.searchMovie();
     }
   }
 };
@@ -100,6 +111,7 @@ export default {
   border: 1px solid #fff;
   color: #222222;
   background-color: #fff;
+  cursor: pointer;
 }
 .movie-case > img {
   width: 190px;
@@ -108,6 +120,21 @@ export default {
 .movie-case > h4 {
   font-size: 14px;
   margin: 0;
-  overflow-x: hidden;
+  overflow-y: hidden;
+}
+#pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+.pagination-btn {
+  background-color: dodgerblue;
+  width: 50px;
+  height: 50px;
+  margin: 0 5px;
+  border: 1px solid dodgerblue;
+  border-radius: 50%;
+  color: #fff;
+  cursor: pointer;
 }
 </style>
