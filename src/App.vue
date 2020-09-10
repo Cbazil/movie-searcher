@@ -8,36 +8,20 @@
 
 <script>
 export default {
-  name: "app",
+  name: "app"
 };
 </script>
 
 <style>
-#app {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-
-h1,
-h2 {
-  font-weight: normal;
-}
-
-ul {
-  list-style-type: none;
+html {
+  background-color: #222222;
+  margin: 0;
   padding: 0;
+  width: 100%;
 }
-
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-
-a {
-  color: #42b983;
+main {
+  padding: 2% 6%;
+  text-align: center;
+  font-family: "Comic Neue", cursive;
 }
 </style>
