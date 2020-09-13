@@ -28,7 +28,7 @@
       <div>
         <button id="backBtn" @click="backHome">
           <i
-            class="fas fa-arrow-left"
+            class="fas fa-arrow-circle-left"
             style="color: white; font-size: 30px"
           ></i>
         </button>
@@ -48,13 +48,34 @@
         </div>
       </div>
     </div>
-    <div v-if="mode == 0" id="pagination">
+    <div v-if="mode == 0 && pages_full.length > 0" id="pagination">
+      <button v-if="pages[0] > 3" class="pagination-btn" @click="selectPage(1)">
+        1
+      </button>
+      <button v-if="pages[0] > 3" class="pagination-btn" @click="prevPages">
+        <i
+          class="fas fa-angle-double-left"
+          style="color: white; font-size: 16px"
+        >
+        </i>
+      </button>
       <button
         class="pagination-btn"
         v-for="page in pages"
         @click="selectPage(page)"
       >
         {{ page }}
+      </button>
+      <button
+        v-if="pages_full.length > 3 && !lastPage"
+        class="pagination-btn"
+        @click="nextPages"
+      >
+        <i
+          class="fas fa-angle-double-right"
+          style="color: white; font-size: 16px"
+        >
+        </i>
       </button>
     </div>
   </div>
@@ -66,14 +87,19 @@ export default {
     return {
       search_input: "",
       mode: 0,
-      movie: {},
-      movies: [],
+      movie: {}, // Movie object for details view
+      movies: [], // Our movie list based off search
       apiKey: "6ac722593e5dba1c8e10c2f8dda07f65",
       baseURL: "https://api.themoviedb.org/3/",
       page: 1,
-      pages: []
+      grouped: [],
+      pages: [],
+      lastPage: false,
+      set: 0,
+      pages_full: []
     };
   },
+
   methods: {
     searchMovie() {
       this.mode = 0;
@@ -90,10 +116,21 @@ export default {
         .then(data => {
           this.movies = data.results;
           let pagesArr = [];
+          let arr = [];
           for (let i = 1, count = 0; count < data.total_pages; count++, i++) {
             pagesArr.push(i);
+            arr.push(i);
           }
-          this.pages = pagesArr;
+          this.pages_full = pagesArr;
+          if (this.pages.length < 1 && arr.length > 3) {
+            this.pages = arr.slice(0, 3);
+          }
+          let cut = Math.ceil(arr.length / 3);
+
+          for (let i = 0; i < cut; i++) {
+            let first = arr.splice(0, 3);
+            this.grouped.push(first);
+          }
         })
         .catch(err => {
           alart(err);
@@ -114,6 +151,24 @@ export default {
     enterMovie(item) {
       this.mode = 1;
       this.movie = item;
+    },
+    nextPages() {
+      this.set = this.set + 1;
+      this.pages = this.grouped[this.set];
+      let last = this.pages_full.slice(-1);
+      if (this.pages.includes(last[0])) {
+        this.lastPage = true;
+      } else {
+        this.lastPage = false;
+      }
+    },
+    prevPages() {
+      this.set = this.set - 1;
+      this.pages = this.grouped[this.set];
+      let last = this.pages_full.slice(-1);
+      if (!this.pages.includes(last[0])) {
+        this.lastPage = false;
+      }
     }
   }
 };
